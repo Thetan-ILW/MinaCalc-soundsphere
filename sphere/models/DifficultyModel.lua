@@ -33,6 +33,11 @@ function DifficultyModel:compute(chartdiff, noteChart, timeRate)
 	end
 
 	local msd = minacalc.getSsr(notes, timeRate)
+
+	if not msd then
+		return
+	end
+
 	chartdiff.msd_diff = msd.overall
 
 	msd.overall = nil

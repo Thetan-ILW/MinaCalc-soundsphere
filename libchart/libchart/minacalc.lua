@@ -39,6 +39,11 @@ local MinaCalc = {}
 function MinaCalc.getSsr(notes, timeRate)
 	local row_count = 0
 	local row_notes = 0
+
+	if not notes[1] then
+		return nil
+	end
+
 	local row_time = notes[1].time
 
 	local bytes = { 1, 2, 4, 8 }
