@@ -2,7 +2,7 @@ local class = require("class")
 local enps = require("libchart.enps")
 local osu_starrate = require("libchart.osu_starrate")
 local simplify_notechart = require("libchart.simplify_notechart")
-local minacalc = require("libchart.minacalc")
+local etterna_ssr = require("libchart.etterna_ssr")
 
 ---@class sphere.DifficultyModel
 ---@operator call: sphere.DifficultyModel
@@ -32,51 +32,14 @@ function DifficultyModel:compute(chartdiff, noteChart, timeRate)
 		return
 	end
 
-	local msd = minacalc.getSsr(notes, timeRate)
+	local ssr = etterna_ssr.getSsr(notes, timeRate)
 
-	if not msd then
+	if not ssr then
 		return
 	end
 
-	chartdiff.msd_diff = msd.overall
-
-	msd.overall = nil
-
-	local max_diff = 0
-
-	for _, value in pairs(msd) do
-		max_diff = math.max(value, max_diff)
-	end
-
-	local diffs = {}
-	local count = 0
-
-	for key, value in pairs(msd) do
-		if count >= 2 then
-			break
-		end
-
-		if value > max_diff * 0.93 then
-			table.insert(diffs, { key, value })
-			count = count + 1
-		end
-	end
-
-	table.sort(diffs, function(a, b)
-		return a[2] > b[2]
-	end)
-
-	local patterns = ""
-
-	for i, diff in ipairs(diffs) do
-		patterns = string.format("%s%s", patterns, diff[1])
-
-		if i ~= #diffs then
-			patterns = patterns .. "\n"
-		end
-	end
-
-	chartdiff.msd_diff_data = patterns
+	chartdiff.msd_diff = ssr.overall
+	chartdiff.msd_diff_data = etterna_ssr:encodePatterns(ssr)
 end
 
 return DifficultyModel
