@@ -1,16 +1,20 @@
 # Description
-This mod adds difficulty calculator from the game Etterna to soundsphere.
+This mod adds difficulty calculator from Etterna to soundsphere.  
+Only 4K charts. Version 505 (0.72.1)  
 
 # Installation
 - Download this mod by clicking on green button on the top of the page > Download zip  
-- Or by using this link https://github.com/Thetan-ILW/MinaCalc-soundsphere/archive/refs/heads/main.zip  
-- Extract folder named 'MinaCalc-soundsphere-main` from the ZIP and place it into 'moddedgame' directory inside your the root of your game.  
-- Launch the game.
-- If you already have the chart cache, then go to mounts menu (Folder icon in the left bottom side of the screen) and click on the button "delete chartdiffs" and then press "compute chartdiffs".
-- If not, then make the cache like you always do.  
+- Or by using this link https://github.com/Thetan-ILW/MinaCalc-soundsphere/archive/refs/heads/main.zip
+  
+- Extract MinaCalc folder into moddedgame directory inside your game root.
+- (FOR DEFAULT SOUNDSPHERE THEME) Launch the game, open mounts menu, go to database tab and press "delete chartdiffs". Then press "compute chartdiffs". After that, go to settings and select MSD calculator. Restart the game.
+- (FOR IRIZZ THEME) Launch the game, go to collections > mounts. Open database tab find "Charts difficulty / rating" section and press Delete and then Compute. After that, go to settings > UI > Difficulty and select MSD.
+  
+- Step above is required if you had already cached the charts. For new charts you just need to press "update" in mounts > select your locations.
 
-# Note
-Any time rate that isn't 1.0x, will show incorrect difficulty value. But it will be correct on the result screen, because the game calculate the difficulty each time you enter it.  
+# NOTE:
+IN SONG SELECT, ONLY DIFFICULTY ON 1.0x RATE IS CORRECT.
+In result screen showed difficulty is always correct, as it recalculates for each score and applies mods and rates.
 
 # Compiling the library
 ## Linux
