@@ -32,9 +32,10 @@ function DifficultyModel:compute(chartdiff, noteChart, timeRate)
 		return
 	end
 
-	local ssr = etterna_ssr.getSsr(notes, timeRate)
+	local status, ssr = pcall(etterna_ssr.getSsr, notes, timeRate)
 
-	if not ssr then
+	if not status then
+		print(ssr)
 		return
 	end
 
