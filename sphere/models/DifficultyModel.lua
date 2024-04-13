@@ -39,6 +39,10 @@ function DifficultyModel:compute(chartdiff, noteChart, timeRate)
 		return
 	end
 
+	if not ssr then
+		return
+	end
+
 	chartdiff.msd_diff = ssr.overall
 	chartdiff.msd_diff_data = etterna_ssr:encodePatterns(ssr)
 end
