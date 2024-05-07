@@ -1,6 +1,6 @@
 # Description
 This mod adds difficulty calculator from Etterna to soundsphere.  
-Only 4K charts. Version 505 (0.72.1)  
+Only 4K charts. Version 505 (0.72.1) and 434 (0.70.3). See `/bin/` directory.  
 
 # Installation
 - Download this mod by clicking on green button on the top of the page > Download zip  

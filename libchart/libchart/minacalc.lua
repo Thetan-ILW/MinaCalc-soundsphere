@@ -44,6 +44,8 @@ ffi.cdef([[
 
 local calcHandle = lib.create_calc()
 
+---@param size number
+---@return ffi.cdata*
 function MinaCalc.noteInfo(size)
 	if not size then
 		return ffi.new("NoteInfo")
@@ -52,8 +54,11 @@ function MinaCalc.noteInfo(size)
 	return ffi.new(("NoteInfo[%i]"):format(size))
 end
 
-function MinaCalc.getMsds(rows, num_rows)
-	local result = lib.calc_msd(calcHandle, rows, num_rows)
+---@param rows ffi.cdata*
+---@param row_count number
+---@return table
+function MinaCalc.getMsds(rows, row_count)
+	local result = lib.calc_msd(calcHandle, rows, row_count)
 
 	local t = {}
 
@@ -75,6 +80,11 @@ function MinaCalc.getMsds(rows, num_rows)
 	return t
 end
 
+---@param rows ffi.cdata*
+---@param row_count number
+---@param time_rate number
+---@param target_accuracy number
+---@return table
 function MinaCalc.getSsr(rows, row_count, time_rate, target_accuracy)
 	local ssr = lib.calc_ssr(calcHandle, rows, row_count, time_rate, target_accuracy)
 

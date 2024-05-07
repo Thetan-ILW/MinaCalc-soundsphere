@@ -51,6 +51,8 @@ local function getRows(notes)
 	return c_rows, row_count
 end
 
+---@param notes table
+---@return table?
 function EtternaMsd.getMsds(notes)
 	if not notes[1] then
 		return nil
@@ -64,6 +66,9 @@ end
 local minRate = 7
 local maxRate = 20
 
+---@param msds table
+---@param time_rate number
+---@return table
 function EtternaMsd.getApproximate(msds, time_rate)
 	local floor = math_util.clamp(math.floor(time_rate * 10), minRate, maxRate)
 	local ceil = math_util.clamp(math.ceil(time_rate * 10), minRate, maxRate)
@@ -84,6 +89,9 @@ function EtternaMsd.getApproximate(msds, time_rate)
 	return t
 end
 
+---@param notes table
+---@param time_rate number
+---@return table?
 function EtternaMsd.getMsdForRate(notes, time_rate)
 	if not notes[1] then
 		return nil
@@ -95,6 +103,8 @@ function EtternaMsd.getMsdForRate(notes, time_rate)
 	return EtternaMsd.getApproximate(msds, time_rate)
 end
 
+---@param msds table
+---@return string
 function EtternaMsd:encode(msds)
 	local t = {}
 
@@ -111,6 +121,8 @@ function EtternaMsd:encode(msds)
 	return json.encode(t)
 end
 
+---@param str string
+---@return table?
 function EtternaMsd:decode(str)
 	if not str then
 		return nil
