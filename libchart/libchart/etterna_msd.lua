@@ -142,4 +142,8 @@ function EtternaMsd:decode(str)
 	return t
 end
 
+function EtternaMsd.getVersion()
+	return "0.1.2"
+end
+
 return EtternaMsd
