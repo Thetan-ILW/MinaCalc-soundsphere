@@ -2,7 +2,7 @@ local class = require("class")
 local enps = require("libchart.enps")
 local osu_starrate = require("libchart.osu_starrate")
 local simplify_notechart = require("libchart.simplify_notechart")
-local etterna_ssr = require("libchart.etterna_ssr")
+local etterna_msd = require("libchart.etterna_msd")
 
 ---@class sphere.DifficultyModel
 ---@operator call: sphere.DifficultyModel
@@ -32,19 +32,19 @@ function DifficultyModel:compute(chartdiff, noteChart, timeRate)
 		return
 	end
 
-	local status, ssr = pcall(etterna_ssr.getSsr, notes, timeRate)
+	local status, msds = pcall(etterna_msd.getMsds, notes, timeRate)
 
 	if not status then
-		print(ssr)
+		print(msds)
 		return
 	end
 
-	if not ssr then
+	if not msds then
 		return
 	end
 
-	chartdiff.msd_diff = ssr.overall
-	chartdiff.msd_diff_data = etterna_ssr:encodePatterns(ssr)
+	chartdiff.msd_diff = msds[10].overall
+	chartdiff.msd_diff_data = etterna_msd:encode(msds)
 end
 
 return DifficultyModel
