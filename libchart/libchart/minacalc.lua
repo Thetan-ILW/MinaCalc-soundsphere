@@ -7,12 +7,9 @@ end
 MinaCalc = {}
 
 local lib
-
-if jit.os == "Windows" then
-	lib = ffi.load("moddedgame/MinaCalc/bin/win64/libminacalc.dll")
-else
-	lib = ffi.load("moddedgame/MinaCalc/bin/linux64/libminacalc.so")
-end
+local lib_path = NOESIS_INSTALLED and "bin/" or "moddedgame/MinaCalc/bin/"
+lib_path = lib_path .. (jit.os == "Windows" and "win64/libminacalc.dll" or "linux64/libminacalc.so")
+lib = ffi.load(lib_path)
 
 ffi.cdef([[
 	typedef struct CalcHandle {} CalcHandle;
@@ -33,7 +30,7 @@ ffi.cdef([[
 		unsigned int notes;
 		float rowTime;
 	} NoteInfo;
-	
+
 	typedef struct MsdForAllRates {
 		Ssr msds[14];
 	} MsdForAllRates;
