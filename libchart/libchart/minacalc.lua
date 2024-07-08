@@ -52,7 +52,7 @@ function MinaCalc.noteInfo(size)
 		return ffi.new("NoteInfo")
 	end
 
-	return ffi.new(("NoteInfo[%i]"):format(size))
+	return ffi.new("NoteInfo[?]", size)
 end
 
 ---@param rows ffi.cdata*
