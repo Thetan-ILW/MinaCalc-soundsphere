@@ -6,10 +6,14 @@ end
 
 MinaCalc = {}
 
-local lib
-local lib_path = NOESIS_INSTALLED and "bin/" or "moddedgame/MinaCalc/bin/"
-lib_path = lib_path .. (jit.os == "Windows" and "win64/libminacalc.dll" or "linux64/libminacalc.so")
-lib = ffi.load(lib_path)
+local file = jit.os == "Windows" and "win64/libminacalc.dll" or "linux64/libminacalc.so"
+local lib_path = "bin/" .. file
+
+if love.filesystem.getInfo("moddedgame/MinaCalc/bin/" .. file) then
+	lib_path = "moddedgame/MinaCalc/bin/" .. file
+end
+
+local lib = ffi.load(lib_path)
 
 ffi.cdef([[
 	typedef struct CalcHandle {} CalcHandle;
