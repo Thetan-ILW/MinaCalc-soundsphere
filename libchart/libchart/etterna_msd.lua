@@ -18,7 +18,7 @@ EtternaMsd.orderedSsr = {
 ---@param notes table
 ---@return table
 ---@return number
-local function getRows(notes)
+function EtternaMsd.getRows(notes)
 	local row_count = 0
 	local row_notes = 0
 	local row_time = notes[1].time
@@ -58,7 +58,7 @@ function EtternaMsd.getMsds(notes)
 		return nil
 	end
 
-	local rows, row_count = getRows(notes)
+	local rows, row_count = EtternaMsd.getRows(notes)
 
 	return minacalc.getMsds(rows, row_count)
 end
@@ -97,7 +97,7 @@ function EtternaMsd.getMsdForRate(notes, time_rate)
 		return nil
 	end
 
-	local rows, row_count = getRows(notes)
+	local rows, row_count = EtternaMsd.getRows(notes)
 
 	local msds = minacalc.getMsds(rows, row_count)
 	return EtternaMsd.getApproximate(msds, time_rate)
@@ -143,7 +143,7 @@ function EtternaMsd:decode(str)
 end
 
 function EtternaMsd.getVersion()
-	return "0.1.2"
+	return "0.1.3"
 end
 
 return EtternaMsd
