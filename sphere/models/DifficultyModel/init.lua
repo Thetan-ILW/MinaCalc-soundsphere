@@ -6,7 +6,7 @@ local DiffcalcContext = require("sphere.models.DifficultyModel.DiffcalcContext")
 local EnpsDiffcalc = require("sphere.models.DifficultyModel.EnpsDiffcalc")
 local NotesDiffcalc = require("sphere.models.DifficultyModel.NotesDiffcalc")
 local OsuDiffcalc = require("sphere.models.DifficultyModel.OsuDiffcalc")
-local MsdDiffcalc = require("sphere.models.DifficultyModel.MsdDiffcalc")
+local MsdDiffcalc = require("minacalc.MsdDiffcalc")
 local PreviewDiffcalc = require("sphere.models.DifficultyModel.PreviewDiffcalc")
 
 ---@class sphere.DifficultyModel

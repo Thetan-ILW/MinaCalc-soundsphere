@@ -1,5 +1,5 @@
 local IDiffcalc = require("sphere.models.DifficultyModel.IDiffcalc")
-local etterna_msd = require("libchart.etterna_msd")
+local etterna_msd = require("minacalc.etterna_msd")
 
 ---@class sphere.MsdDiffcalc: sphere.IDiffcalc
 ---@operator call: sphere.MsdDiffcalc
@@ -28,7 +28,7 @@ function MsdDiffcalc:compute(ctx)
 	end
 
 	ctx.chartdiff.msd_diff = msds[10].overall
-	ctx.chartdiff.msd_diff_data = etterna_msd:encode(msds)
+	ctx.chartdiff.msd_diff_data = etterna_msd.encode(msds)
 end
 
 return MsdDiffcalc

@@ -1,19 +1,16 @@
 local ffi = require("ffi")
+local path_util = require("path_util")
 
-if MinaCalc then
-	return MinaCalc
-end
-
-MinaCalc = {}
+local minacalc_lib = {}
 
 local file = jit.os == "Windows" and "win64/libminacalc.dll" or "linux64/libminacalc.so"
-local lib_path = "bin/" .. file
+local lib_path = "minacalc/bin/" .. file
 
-if love.filesystem.getInfo("moddedgame/MinaCalc/bin/" .. file) then
-	lib_path = "moddedgame/MinaCalc/bin/" .. file
+if love.filesystem.getInfo("minacalc/bin/" .. file) then
+	lib_path = path_util.join("minacalc/bin", file)
 end
 
-local lib = ffi.load(lib_path)
+local lib = ffi.load(path_util.join(love.filesystem.getRealDirectory(lib_path), lib_path))
 
 ffi.cdef([[
 	typedef struct CalcHandle {} CalcHandle;
@@ -47,7 +44,7 @@ local calcHandle = lib.create_calc()
 
 ---@param size number
 ---@return ffi.cdata*
-function MinaCalc.noteInfo(size)
+function minacalc_lib.noteInfo(size)
 	if not size then
 		return ffi.new("NoteInfo")
 	end
@@ -58,7 +55,7 @@ end
 ---@param rows ffi.cdata*
 ---@param row_count number
 ---@return table
-function MinaCalc.getMsds(rows, row_count)
+function minacalc_lib.getMsds(rows, row_count)
 	local result = lib.calc_msd(calcHandle, rows, row_count)
 
 	local t = {}
@@ -86,7 +83,7 @@ end
 ---@param time_rate number
 ---@param target_accuracy number
 ---@return table
-function MinaCalc.getSsr(rows, row_count, time_rate, target_accuracy)
+function minacalc_lib.getSsr(rows, row_count, time_rate, target_accuracy)
 	local ssr = lib.calc_ssr(calcHandle, rows, row_count, time_rate, target_accuracy)
 
 	return {
@@ -116,18 +113,19 @@ local function test()
 		0b1111,
 	}
 
-	local rows = MinaCalc.noteInfo(row_count)
+	local rows = minacalc_lib.noteInfo(row_count)
 
 	for i = 0, 1000 - 1, 1 do
 		rows[i].notes = bytes[(i % 10) + 1]
 		rows[i].rowTime = i * 0.05
 	end
 
-	local ssr = MinaCalc.getSsr(rows, row_count, 1.0, 0.93)
+	local ssr = minacalc_lib.getSsr(rows, row_count, 1.0, 0.93)
 	local overall = ssr.overall
 	assert(overall > 30, "RESTART THE GAME!!! MinaCalc is not feeling good for some reason." .. overall)
+	print("minacalc ok")
 end
 
 test()
 
-return MinaCalc
+return minacalc_lib
