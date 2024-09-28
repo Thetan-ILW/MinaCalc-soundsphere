@@ -57,10 +57,20 @@ function EtternaMsd.getMsds(notes)
 	if not notes[1] then
 		return nil
 	end
-
 	local rows, row_count = EtternaMsd.getRows(notes)
-
 	return minacalc.getMsds(rows, row_count)
+end
+
+---@param notes table
+---@param rate number
+---@param accuracy number
+---@return table
+function EtternaMsd.getSsr(notes, rate, accuracy)
+	if not notes[1] then
+		return {}
+	end
+	local rows, row_count = EtternaMsd.getRows(notes)
+	return minacalc.getSsr(rows, row_count, rate, accuracy)
 end
 
 local minRate = 7
@@ -102,6 +112,7 @@ function EtternaMsd.getMsdForRate(notes, time_rate)
 	local msds = minacalc.getMsds(rows, row_count)
 	return EtternaMsd.getApproximate(msds, time_rate)
 end
+
 
 ---@param msds table
 ---@return string
