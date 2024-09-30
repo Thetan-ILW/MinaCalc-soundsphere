@@ -1,0 +1,10 @@
+{
+    "name": "msd_calculator",
+    "display_name": "MSD Calculator",
+    "desc": "Difficulty calculator from Etterna",
+    "creator": "Thetan",
+    "version": 1,
+    "types": {
+        "require": "msdcalc_init",
+    },
+}

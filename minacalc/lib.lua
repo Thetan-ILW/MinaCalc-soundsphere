@@ -1,16 +1,9 @@
 local ffi = require("ffi")
-local path_util = require("path_util")
 
 local minacalc_lib = {}
 
-local file = jit.os == "Windows" and "win64/libminacalc.dll" or "linux64/libminacalc.so"
-local lib_path = "minacalc/bin/" .. file
-
-if love.filesystem.getInfo("minacalc/bin/" .. file) then
-	lib_path = path_util.join("minacalc/bin", file)
-end
-
-local lib = ffi.load(path_util.join(love.filesystem.getRealDirectory(lib_path), lib_path))
+local lib_path = jit.os == "Windows" and "bin/win64/libminacalc.dll" or "bin/linux64/libminacalc.so"
+local lib = ffi.load(lib_path)
 
 ffi.cdef([[
 	typedef struct CalcHandle {} CalcHandle;
@@ -41,6 +34,7 @@ ffi.cdef([[
 ]])
 
 local calcHandle = lib.create_calc()
+print("minacalc handle created")
 
 ---@param size number
 ---@return ffi.cdata*
