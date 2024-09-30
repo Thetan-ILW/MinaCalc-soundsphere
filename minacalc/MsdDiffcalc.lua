@@ -13,6 +13,8 @@ function MsdDiffcalc:compute(ctx)
 	local notes = ctx:getSimplifiedNotes()
 
 	if ctx.chartdiff.inputmode ~= "4key" then
+		ctx.chartdiff.msd_diff = 0
+		ctx.chartdiff.msd_diff_data = ""
 		return
 	end
 

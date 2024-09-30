@@ -135,7 +135,7 @@ end
 ---@param str string
 ---@return table?
 function EtternaMsd.decode(str)
-	if not str then
+	if not str or str == "" then
 		return nil
 	end
 
