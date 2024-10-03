@@ -15,6 +15,17 @@ EtternaMsd.orderedSsr = {
 	"technical",
 }
 
+EtternaMsd.keyCount = {
+	["4key"] = 4,
+	["5key"] = 6,
+	["6key"] = 6,
+	["7key"] = 8,
+	["7key1scratch"] = 8,
+	["8key"] = 8,
+	["9key"] = 10,
+	["10key"] = 10
+}
+
 ---@param notes table
 ---@return table
 ---@return number
@@ -23,7 +34,7 @@ function EtternaMsd.getRows(notes)
 	local row_notes = 0
 	local row_time = notes[1].time
 
-	local bytes = { 1, 2, 4, 8 }
+	local bytes = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 }
 	local rows = {}
 
 	for _, note in ipairs(notes) do
@@ -52,25 +63,35 @@ function EtternaMsd.getRows(notes)
 end
 
 ---@param notes table
+---@param key_mode number
 ---@return table?
-function EtternaMsd.getMsds(notes)
+function EtternaMsd.getMsds(notes, key_mode)
+	local key_count = EtternaMsd.keyCount[key_mode]
+	if not key_count then
+		return nil
+	end
 	if not notes[1] then
 		return nil
 	end
 	local rows, row_count = EtternaMsd.getRows(notes)
-	return minacalc.getMsds(rows, row_count)
+	return minacalc.getMsds(rows, row_count, key_count)
 end
 
 ---@param notes table
 ---@param rate number
 ---@param accuracy number
+---@param key_mode string
 ---@return table
-function EtternaMsd.getSsr(notes, rate, accuracy)
+function EtternaMsd.getSsr(notes, rate, accuracy, key_mode)
+	local key_count = EtternaMsd.keyCount[key_mode]
+	if not key_count then
+		return {}
+	end
 	if not notes[1] then
 		return {}
 	end
 	local rows, row_count = EtternaMsd.getRows(notes)
-	return minacalc.getSsr(rows, row_count, rate, accuracy)
+	return minacalc.getSsr(rows, row_count, rate, accuracy, key_count)
 end
 
 local minRate = 7
@@ -98,21 +119,6 @@ function EtternaMsd.getApproximate(msds, time_rate)
 
 	return t
 end
-
----@param notes table
----@param time_rate number
----@return table?
-function EtternaMsd.getMsdForRate(notes, time_rate)
-	if not notes[1] then
-		return nil
-	end
-
-	local rows, row_count = EtternaMsd.getRows(notes)
-
-	local msds = minacalc.getMsds(rows, row_count)
-	return EtternaMsd.getApproximate(msds, time_rate)
-end
-
 
 ---@param msds table
 ---@return string
@@ -203,22 +209,41 @@ function EtternaMsd.getFirstFromMsd(msd)
 end
 
 ---@param pattern  string
+---@param key_mode string
 ---@return string
-function EtternaMsd.simplifySsr(pattern)
-	if pattern == "stream" then
-		return "STR"
-	elseif pattern == "jumpstream" then
-		return "JS"
-	elseif pattern == "handstream" then
-		return "HS"
-	elseif pattern == "stamina" then
-		return "STMN"
-	elseif pattern == "jackspeed" then
-		return "JACK"
-	elseif pattern == "chordjack" then
-		return "CJ"
-	elseif pattern == "technical" then
-		return "TECH"
+function EtternaMsd.simplifySsr(pattern, key_mode)
+	if key_mode == "4key" then
+		if pattern == "stream" then
+			return "STR"
+		elseif pattern == "jumpstream" then
+			return "JS"
+		elseif pattern == "handstream" then
+			return "HS"
+		elseif pattern == "stamina" then
+			return "STMN"
+		elseif pattern == "jackspeed" then
+			return "JACK"
+		elseif pattern == "chordjack" then
+			return "CJ"
+		elseif pattern == "technical" then
+			return "TECH"
+		end
+	else
+		if pattern == "stream" then
+			return "STR"
+		elseif pattern == "jumpstream" then
+			return "CHSTR"
+		elseif pattern == "handstream" then
+			return "BRKT"
+		elseif pattern == "chordjack" then
+			return "CJ"
+		elseif pattern == "stamina" then
+			return "STMN"
+		elseif pattern == "jackspeed" then
+			return "JACK"
+		elseif pattern == "technical" then
+			return "TECH"
+		end
 	end
 
 	return "NONE"

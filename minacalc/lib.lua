@@ -1,13 +1,16 @@
 local ffi = require("ffi")
+local path_util = require("path_util")
 
 local minacalc_lib = {}
 
-local lib_path = jit.os == "Windows" and "bin/win64/libminacalc.dll" or "bin/linux64/libminacalc.so"
-local lib = ffi.load(lib_path)
-
 ffi.cdef([[
+	typedef struct NoteInfo
+	{
+		unsigned int notes;
+		float rowTime;
+	} NoteInfo;
+
 	typedef struct CalcHandle {} CalcHandle;
-	CalcHandle *create_calc();
 
 	typedef struct Ssr {
 		float overall;
@@ -20,21 +23,30 @@ ffi.cdef([[
 		float technical;
 	} Ssr;
 
-	typedef struct NoteInfo {
-		unsigned int notes;
-		float rowTime;
-	} NoteInfo;
-
 	typedef struct MsdForAllRates {
+		// one for each full-rate from 0.7 to 2.0 inclusive
 		Ssr msds[14];
 	} MsdForAllRates;
 
-	Ssr calc_ssr(CalcHandle *calc, NoteInfo *rows, size_t num_rows, float music_rate, float score_goal);
-	MsdForAllRates calc_msd(CalcHandle *calc, const NoteInfo *rows, size_t num_rows);
+	int calc_version();
+
+	CalcHandle *create_calc();
+
+	void destroy_calc(CalcHandle *calc);
+
+	MsdForAllRates calc_msd(CalcHandle *calc, const NoteInfo *rows, size_t num_rows, const unsigned int keycount);
+	Ssr calc_ssr(CalcHandle *calc, NoteInfo *rows, size_t num_rows, float music_rate, float score_goal, const unsigned int keycount);
 ]])
 
-local calcHandle = lib.create_calc()
-print("minacalc handle created")
+local lib_path = jit.os == "Windows" and "bin/win64/libminacalc.dll" or "bin/linux64/libminacalc.so"
+
+if not love.filesystem.getInfo(lib_path) then
+	return -- Other plugin loaded before minacalc, this plugin will copy library to bin and restart the game later.
+end
+
+local lib = ffi.load(lib_path)
+local calc_handle = lib.create_calc()
+print(("minacalc %i handle created"):format(lib.calc_version()))
 
 ---@param size number
 ---@return ffi.cdata*
@@ -48,9 +60,10 @@ end
 
 ---@param rows ffi.cdata*
 ---@param row_count number
+---@param key_count number
 ---@return table
-function minacalc_lib.getMsds(rows, row_count)
-	local result = lib.calc_msd(calcHandle, rows, row_count)
+function minacalc_lib.getMsds(rows, row_count, key_count)
+	local result = lib.calc_msd(calc_handle, rows, row_count, key_count)
 
 	local t = {}
 
@@ -76,9 +89,10 @@ end
 ---@param row_count number
 ---@param time_rate number
 ---@param target_accuracy number
+---@param keycount number
 ---@return table
-function minacalc_lib.getSsr(rows, row_count, time_rate, target_accuracy)
-	local ssr = lib.calc_ssr(calcHandle, rows, row_count, time_rate, target_accuracy)
+function minacalc_lib.getSsr(rows, row_count, time_rate, target_accuracy, keycount)
+	local ssr = lib.calc_ssr(calc_handle, rows, row_count, time_rate, target_accuracy, keycount)
 
 	return {
 		overall = ssr.overall,
@@ -114,12 +128,41 @@ local function test()
 		rows[i].rowTime = i * 0.05
 	end
 
-	local ssr = minacalc_lib.getSsr(rows, row_count, 1.0, 0.93)
+	local ssr = minacalc_lib.getSsr(rows, row_count, 1.0, 0.93, 4)
 	local overall = ssr.overall
 	assert(overall > 30, "RESTART THE GAME!!! MinaCalc is not feeling good for some reason." .. overall)
 	print("minacalc ok")
 end
 
+local function test7k()
+	print(" ----- 7K ----- ")
+	local row_count = 1000
+	local bytes = {
+		0b0101010,
+		0b1010101,
+		0b0001000,
+		0b0100010,
+		0b1010100,
+		0b0100001,
+		0b0001010,
+	}
+
+	local rows = minacalc_lib.noteInfo(row_count)
+
+	for i = 0, 1000 - 1, 1 do
+		rows[i].notes = bytes[(i % #bytes) + 1]
+		rows[i].rowTime = i * 0.125
+	end
+
+	local ssr = minacalc_lib.getSsr(rows, row_count, 1.0, 0.93, 8)
+
+	print("streams:", ssr.stream)
+	print("brackets:", ssr.handstream)
+	print("chordstream:", ssr.jumpstream)
+	print("chordjack:", ssr.chordjack)
+end
+
 test()
+test7k()
 
 return minacalc_lib

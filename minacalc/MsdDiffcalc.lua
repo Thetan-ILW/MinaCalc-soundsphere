@@ -12,13 +12,7 @@ MsdDiffcalc.chartdiff_field = "msd_diff"
 function MsdDiffcalc:compute(ctx)
 	local notes = ctx:getSimplifiedNotes()
 
-	if ctx.chartdiff.inputmode ~= "4key" then
-		ctx.chartdiff.msd_diff = 0
-		ctx.chartdiff.msd_diff_data = ""
-		return
-	end
-
-	local status, msds = pcall(etterna_msd.getMsds, notes, ctx.rate)
+	local status, msds = pcall(etterna_msd.getMsds, notes, ctx.chartdiff.inputmode)
 
 	if not status then
 		print(msds)
@@ -26,6 +20,8 @@ function MsdDiffcalc:compute(ctx)
 	end
 
 	if not msds then
+		ctx.chartdiff.msd_diff = 0
+		ctx.chartdiff.msd_diff_data = ""
 		return
 	end
 
