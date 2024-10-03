@@ -1,20 +1,19 @@
 # Description
-This mod adds difficulty calculator from Etterna to soundsphere.  
-Only 4K charts. Version 505 (0.72.1) and 434 (0.70.3). See `/bin/` directory.  
+This plugin adds difficulty calculator from Etterna to soundsphere.  
+Windows: Only 4K charts. Version 505 (0.72.1) and 434 (0.70.3). See `/bin/win64` directory.  
+Linux: 4K - 10K charts. Version 514 (0.73), 505 and 434  
 
 # Installation
-- Download this mod by clicking on green button on the top of the page > Download zip  
-- Or by using this link https://github.com/Thetan-ILW/MinaCalc-soundsphere/archive/refs/heads/main.zip
-  
-- Extract MinaCalc folder into moddedgame directory inside your game root.
-- (FOR DEFAULT SOUNDSPHERE THEME) Launch the game, open mounts menu, go to database tab and press "delete chartdiffs". Then press "compute chartdiffs". After that, go to settings and select MSD calculator. Restart the game.
-- (FOR IRIZZ THEME) Launch the game, go to collections > mounts. Open database tab find "Charts difficulty / rating" section and press Delete and then Compute. After that, go to settings > UI > Difficulty and select MSD.
-  
-- Step above is required if you had already cached the charts. For new charts you just need to press "update" in mounts > select your locations.
+1. Open the game.  
+2. Open the package manager window (click on the 9 rectangles at the bottom left)  
+3. Go to the `remote` tab and click on the `download` button next to the `msd_calculator` plugin.  
+4. Restart the game. The next time you start the game, the plugin will restart the game and copy the files to the `bin/` folder.  
 
-# NOTE:
-IN SONG SELECT, ONLY DIFFICULTY ON 1.0x RATE IS CORRECT.
-In result screen showed difficulty is always correct, as it recalculates for each score and applies mods and rates.
+# Post installation
+Only osu! UI and Irizz UI only support this plugin. Default UI does not display patterns and correct difficulty on rates.  
+
+1. You need to select MSD difficulty in the settings.
+2. In the mounts window, on the database tab, click `delete all chartdiffs`. Then update the cache as usual.
 
 # Compiling the library
 ## Linux
