@@ -1,5 +1,4 @@
 local ffi = require("ffi")
-local path_util = require("path_util")
 
 local minacalc_lib = {}
 
@@ -38,14 +37,38 @@ ffi.cdef([[
 	Ssr calc_ssr(CalcHandle *calc, NoteInfo *rows, size_t num_rows, float music_rate, float score_goal, const unsigned int keycount);
 ]])
 
-local lib_path = jit.os == "Windows" and "bin/win64/libminacalc.dll" or "bin/linux64/libminacalc.so"
+local is_windows = love.system.getOS() == "Windows"
+local lib_path = is_windows and "bin/win64/libminacalc.dll" or "bin/linux64/libminacalc.so"
 
 if not love.filesystem.getInfo(lib_path) then
-	return -- Other plugin loaded before minacalc, this plugin will copy library to bin and restart the game later.
+	minacalc_lib.error = "libminacalc not found in the bin/ directory"
+	return minacalc_lib -- Other plugin loaded before minacalc, this plugin will copy library to bin and restart the game later.
 end
 
-local lib = ffi.load(lib_path)
+if is_windows then
+	local winapi = require("winapi")
+	---@type boolean, string?
+	local success, result = pcall(winapi.load_library, lib_path)
+
+	if not success then
+		if type(result) == "string" then
+			minacalc_lib.error = result .. "\n" .. love.filesystem.getSource()
+		end
+
+		return minacalc_lib
+	end
+end
+
+local success, result = pcall(ffi.load, lib_path)
+
+if not success then
+	minacalc_lib.error = result
+	return minacalc_lib
+end
+
+local lib = result
 local calc_handle = lib.create_calc()
+
 print(("minacalc %i handle created"):format(lib.calc_version()))
 
 ---@param size number
@@ -105,64 +128,5 @@ function minacalc_lib.getSsr(rows, row_count, time_rate, target_accuracy, keycou
 		technical = ssr.technical,
 	}
 end
-
-local function test()
-	local row_count = 1000
-	local bytes = {
-		0b0110,
-		0b1111,
-		0b1011,
-		0b1111,
-		0b1100,
-		0b1111,
-		0b0110,
-		0b1111,
-		0b1001,
-		0b1111,
-	}
-
-	local rows = minacalc_lib.noteInfo(row_count)
-
-	for i = 0, 1000 - 1, 1 do
-		rows[i].notes = bytes[(i % 10) + 1]
-		rows[i].rowTime = i * 0.05
-	end
-
-	local ssr = minacalc_lib.getSsr(rows, row_count, 1.0, 0.93, 4)
-	local overall = ssr.overall
-	assert(overall > 30, "RESTART THE GAME!!! MinaCalc is not feeling good for some reason." .. overall)
-	print("minacalc ok")
-end
-
-local function test7k()
-	print(" ----- 7K ----- ")
-	local row_count = 1000
-	local bytes = {
-		0b0101010,
-		0b1010101,
-		0b0001000,
-		0b0100010,
-		0b1010100,
-		0b0100001,
-		0b0001010,
-	}
-
-	local rows = minacalc_lib.noteInfo(row_count)
-
-	for i = 0, 1000 - 1, 1 do
-		rows[i].notes = bytes[(i % #bytes) + 1]
-		rows[i].rowTime = i * 0.125
-	end
-
-	local ssr = minacalc_lib.getSsr(rows, row_count, 1.0, 0.93, 8)
-
-	print("streams:", ssr.stream)
-	print("brackets:", ssr.handstream)
-	print("chordstream:", ssr.jumpstream)
-	print("chordjack:", ssr.chordjack)
-end
-
-test()
-test7k()
 
 return minacalc_lib
