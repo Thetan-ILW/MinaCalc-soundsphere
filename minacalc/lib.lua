@@ -37,7 +37,7 @@ ffi.cdef([[
 	Ssr calc_ssr(CalcHandle *calc, NoteInfo *rows, size_t num_rows, float music_rate, float score_goal, const unsigned int keycount);
 ]])
 
-local is_windows = love.system.getOS() == "Windows"
+local is_windows = jit.os == "Windows"
 local lib_path = is_windows and "bin/win64/libminacalc.dll" or "bin/linux64/libminacalc.so"
 
 if not love.filesystem.getInfo(lib_path) then
